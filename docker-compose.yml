@@ -1,0 +1,35 @@
+services:
+    jendela360:
+        build:
+            context: ./docker/8.2
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: 'jendela360:testing'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+            - 'mysql:172.24.0.1'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+        volumes:
+            - '.:/var/www/html'
+            - '../custom/php.ini:/etc/php/8.1/cli/conf.d/99-sail.ini'
+            - '/home/beans/.local/share/mkcert:/etc/certs'
+        networks:
+            - sail
+            - proxy
+        labels:
+            - traefik.enable=true
+            - traefik.docker.network=proxy
+            - traefik.http.routers.jendela360.rule=Host(`mobil.jendela.test`)
+            - traefik.http.routers.jendela360.tls=true
+            - traefik.http.services.jendela360.loadbalancer.server.port=80
+
+networks:
+    sail:
+        driver: bridge
+    proxy:
+        external: true
