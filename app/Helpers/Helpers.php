@@ -1,9 +1,11 @@
 <?php
 
 if(!function_exists("responseCustom")) {
-    function responseCustom($data = [], $status = false) {
+    function responseCustom($data = [], $message = null,$status = false): array
+    {
         return [
             "status" => $status,
+            "message" => $message,
             "data"   => $data
         ];
     }

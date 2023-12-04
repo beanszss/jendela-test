@@ -9,6 +9,7 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
             - 'mysql:172.24.0.1'
+            - 'mailtrap:18.215.44.90'
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1

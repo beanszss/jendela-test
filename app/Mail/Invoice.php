@@ -14,12 +14,16 @@ class Invoice extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $data;
+    public $car;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($data, $car)
     {
-        //
+        $this->data = $data;
+        $this->car = $car;
     }
 
     /**

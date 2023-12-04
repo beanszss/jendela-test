@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Invoice;
 use App\Models\Cars;
 use App\Models\Orders;
 use App\Repository\BookRepository;
 use App\Repository\OrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -37,27 +39,36 @@ class OrderController extends Controller
     public function store()
     {
         $response = OrderRepository::createOrUpdateOrder();
+        $order = $response['data']['order'];
+        $car = $response['data']['car'];
+
         if(!$response["status"]) {
-            alertNotify(false, $response["data"]);
+            alertNotify(false, $response["message"]);
             return back()->withInput();
         }
 
-        alertNotify(true, $response["data"]);
-        return redirect(url("dashboard/order"));
+        Mail::to($order->email)->send(new Invoice($order,$car));
 
+        alertNotify(true, $response["message"]);
+        return redirect(url("dashboard/order"));
     }
 
     public function update($id)
     {
         $response = OrderRepository::createOrUpdateOrder($id);
+
+        $order = $response['data']['order'];
+        $car = $response['data']['car'];
+
         if(!$response["status"]) {
-            alertNotify(false, $response["data"]);
+            alertNotify(false, $response["message"]);
             return back()->withInput();
         }
 
-        alertNotify(true, $response["data"]);
-        return redirect(url("dashboard/order"));
+        Mail::to($order->email)->send(new Invoice($order,$car));
 
+        alertNotify(true, $response["message"]);
+        return redirect(url("dashboard/order"));
     }
 
     public function destroy($id)

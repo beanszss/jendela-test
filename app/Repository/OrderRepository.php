@@ -2,11 +2,13 @@
 
 namespace App\Repository;
 
+use App\Mail\Invoice;
 use App\Models\Book;
 use App\Models\BookAuthor;
 use App\Models\OrderCars;
 use App\Models\Orders;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class OrderRepository
@@ -32,6 +34,7 @@ class OrderRepository
                 return $validate;
             }
 
+
             DB::beginTransaction();
 
             $order = Orders::updateOrCreate(
@@ -48,13 +51,23 @@ class OrderRepository
             }
 
             $order->cars()->attach($bodyParams["cars"]);
-
             DB::commit();
+//            $order->with('cars');
+            $car = [];
+            collect($order->cars)->each(function ($item, $key) use (&$car) {
+                $car['name'] = $item->cars_name;
+                $car['price'] = number_format($item->price);
+            });
 
-            return responseCustom("Success ".(!$id ? "Add" : "Update")." Order", true);
+            $arrData = [
+                'order' => $order,
+                'car' => $car
+            ];
+
+            return responseCustom($arrData, "Success ".(!$id ? "Add" . $id : "Update")." Order", true);
         } catch (\Throwable $th) {
             DB::rollback();
-            return responseCustom($th->getMessage(), false);
+            return responseCustom($th->getMessage(), null, false);
         }
     }
 
@@ -68,12 +81,12 @@ class OrderRepository
 
 
             if($validation->fails()) {
-                return responseCustom(collect($validation->errors()->all())->implode(' , '), false);
+                return responseCustom(collect($validation->errors()->all())->implode(' , '), null, false);
             }
 
-            return responseCustom("Validation Success", true);
+            return responseCustom(null, "Validation Success", true);
         } catch (\Throwable $th) {
-            return responseCustom($th->getMessage(), false);
+            return responseCustom($th->getMessage(), null, false);
         }
     }
 
@@ -82,13 +95,13 @@ class OrderRepository
         try {
             $order = self::findBookById($id);
             if(!$order) {
-                return responseCustom("Order not found", false);
+                return responseCustom(null, "Order not found", false);
             }
 
             OrderCars::where("orders_id", $id)->delete();
             $order->delete();
 
-            return responseCustom("Success Delete Order!", true);
+            return responseCustom(null,"Success Delete Order!", true);
         } catch (\Throwable $th) {
             return responseCustom($th->getMessage());
         }

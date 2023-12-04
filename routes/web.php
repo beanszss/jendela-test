@@ -28,7 +28,7 @@ Route::get('/', function () {
 
 
 Route::get("test-email", function() {
-    Mail::to("readytosurff@gmail.com")->send(new Invoice());
+    Mail::to("firasmpratama17@gmail.com")->send(new Invoice());
 });
 
 Route::middleware(['guest'])->group(function () {

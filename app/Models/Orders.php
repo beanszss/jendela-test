@@ -25,6 +25,18 @@ class Orders extends Model
      */
     public function cars(): BelongsToMany
     {
-        return $this->belongsToMany(Cars::class, "order_cars");
+        return $this->belongsToMany(
+            Cars::class,
+            "order_cars",
+            'cars_id',
+            'orders_id',
+            'id',
+            'id',
+        );
+    }
+
+    public function carsRelation()
+    {
+        return $this->belongsToMany(OrderCars::class, 'cars');
     }
 }

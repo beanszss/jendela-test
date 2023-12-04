@@ -320,7 +320,9 @@
                                                         <table class="invoice">
                                                             <tbody>
                                                                 <tr>
-                                                                    <td>Anna Smith<br>Invoice #12345<br>June 01 2015
+                                                                    <td>
+                                                                        {{$data->customer_name}}<br>
+                                                                        {{$data->created_at}}
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -329,21 +331,8 @@
                                                                             cellspacing="0">
                                                                             <tbody>
                                                                                 <tr>
-                                                                                    <td>Service 1</td>
-                                                                                    <td class="alignright">$ 20.00</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>Service 2</td>
-                                                                                    <td class="alignright">$ 10.00</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>Service 3</td>
-                                                                                    <td class="alignright">$ 6.00</td>
-                                                                                </tr>
-                                                                                <tr class="total">
-                                                                                    <td class="alignright" width="80%">
-                                                                                        Total</td>
-                                                                                    <td class="alignright">$ 36.00</td>
+                                                                                    <td>{{$car['name']}}</td>
+                                                                                    <td class="alignright">Rp. {{$car['price']}}</td>
                                                                                 </tr>
                                                                             </tbody>
                                                                         </table>
