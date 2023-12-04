@@ -4,7 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Cars;
 use App\Repository\StockCarsRepository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 
 class StockCarsController extends Controller
@@ -14,7 +20,10 @@ class StockCarsController extends Controller
         $this->middleware('super-admin')->except('index');
     }
 
-    public function index()
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function index(): \Illuminate\Foundation\Application|View|Factory|Application
     {
         $cars = StockCarsRepository::listStockCars();
 
@@ -22,55 +31,77 @@ class StockCarsController extends Controller
 
     }
 
-    public function create()
+    /**
+     * @return View|\Illuminate\Foundation\Application|Factory|Application
+     */
+    public function create(): View|\Illuminate\Foundation\Application|Factory|Application
     {
 
         return view('admin.pages.stock-cars.form');
     }
 
-    public function edit(Cars $car)
+    /**
+     * @param Cars $car
+     * @return View|\Illuminate\Foundation\Application|Factory|Application
+     */
+    public function edit(Cars $car): View|\Illuminate\Foundation\Application|Factory|Application
     {
         return view('admin.pages.stock-cars.form', compact('car'));
     }
 
-    public function store()
+    /**
+     * @return Application|\Illuminate\Foundation\Application|RedirectResponse|Redirector
+     */
+    public function store(): \Illuminate\Foundation\Application|Redirector|RedirectResponse|Application
     {
         $response = StockCarsRepository::createOrUpdateCars();
 
         if (!$response["status"]) {
-            alertNotify(false, $response["data"]);
+            alertNotify(false, $response["message"]);
             return back();
         }
 
-        alertNotify(true, $response["data"]);
+        alertNotify(true, $response["message"]);
         return redirect(url("dashboard/cars"));
     }
 
-    public function update($id)
+    /**
+     * @param $id
+     * @return \Illuminate\Foundation\Application|Redirector|RedirectResponse|Application
+     */
+    public function update($id): \Illuminate\Foundation\Application|Redirector|RedirectResponse|Application
     {
         $response = StockCarsRepository::createOrUpdateCars($id);
 
         if (!$response["status"]) {
-            alertNotify(false, $response["data"]);
+            alertNotify(false, $response["message"]);
             return back();
         }
 
-        alertNotify(true, $response["data"]);
+        alertNotify(true, $response["message"]);
         return redirect(url("dashboard/cars"));
     }
 
-    public function destroy($id)
+    /**
+     * @param $id
+     * @return RedirectResponse
+     */
+    public function destroy($id): RedirectResponse
     {
         $response = StockCarsRepository::destroyStockCars($id);
         if (!$response['status']) {
-            alertNotify(false, $response['data']);
+            alertNotify(false, $response['message']);
             return back();
         }
-        alertNotify(true, $response["data"]);
+        alertNotify(true, $response["message"]);
         return back();
     }
 
-    public function listStockCars(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function listStockCars(Request $request): \Illuminate\Http\JsonResponse
     {
         $cars = Cars::paginate(10);
         $superAdmin = Auth::user()->hasRole('super-admin');

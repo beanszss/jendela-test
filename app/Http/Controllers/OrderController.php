@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Mail\Invoice;
 use App\Models\Cars;
 use App\Models\Orders;
-use App\Repository\BookRepository;
 use App\Repository\OrderRepository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,25 +23,38 @@ class OrderController extends Controller
         $this->middleware('super-admin')->except('index');
     }
 
-    public function index()
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
+    public function index(): \Illuminate\Foundation\Application|View|Factory|Application
     {
         $orders = OrderRepository::listOreders();
         return view("admin.pages.order.index", compact("orders"));
     }
 
-    public function create()
+    /**
+     * @return View|\Illuminate\Foundation\Application|Factory|Application
+     */
+    public function create(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         $cars = Cars::get();
         return view("admin.pages.order.form", compact("cars"));
     }
 
-    public function edit(Orders $order)
+    /**
+     * @param Orders $order
+     * @return View|\Illuminate\Foundation\Application|Factory|Application
+     */
+    public function edit(Orders $order): View|\Illuminate\Foundation\Application|Factory|Application
     {
         $cars = Cars::get();
         return view("admin.pages.order.form", compact("order","cars"));
     }
 
-    public function store()
+    /**
+     * @return Application|\Illuminate\Foundation\Application|RedirectResponse|Redirector
+     */
+    public function store(): \Illuminate\Foundation\Application|Redirector|Application|RedirectResponse
     {
         $response = OrderRepository::createOrUpdateOrder();
         $order = $response['data']['order'];
@@ -53,7 +71,11 @@ class OrderController extends Controller
         return redirect(url("dashboard/order"));
     }
 
-    public function update($id)
+    /**
+     * @param $id
+     * @return \Illuminate\Foundation\Application|Redirector|Application|RedirectResponse
+     */
+    public function update($id): \Illuminate\Foundation\Application|Redirector|Application|RedirectResponse
     {
         $response = OrderRepository::createOrUpdateOrder($id);
 
@@ -71,7 +93,11 @@ class OrderController extends Controller
         return redirect(url("dashboard/order"));
     }
 
-    public function destroy($id)
+    /**
+     * @param $id
+     * @return RedirectResponse
+     */
+    public function destroy($id): RedirectResponse
     {
         $response = OrderRepository::destroyOrder($id);
         if(!$response["status"]) {
@@ -83,7 +109,11 @@ class OrderController extends Controller
         return back();
     }
 
-    public function listOrders(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function listOrders(Request $request): \Illuminate\Http\JsonResponse
     {
         $orders = OrderRepository::listOreders();
         $superAdmin = Auth::user()->hasRole("super-admin");

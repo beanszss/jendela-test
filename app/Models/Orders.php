@@ -34,9 +34,4 @@ class Orders extends Model
             'id',
         );
     }
-
-    public function carsRelation()
-    {
-        return $this->belongsToMany(OrderCars::class, 'cars');
-    }
 }
