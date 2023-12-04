@@ -27,18 +27,6 @@
         Data
     </div>
 
-    <li class="nav-item {{ Request::segment(2) == "books" ? "active" : ""  }}">
-        <a class="nav-link" href="{{ url("/dashboard/book") }}">
-            <i class="fa fa-book"></i>
-            <span>List Books</span></a>
-    </li>
-
-    <li class="nav-item {{ Request::segment(2) == "author" ? "active" : ""  }}">
-        <a class="nav-link" href="{{ url("/dashboard/author") }}">
-            <i class="fa fa-shopping-basket"></i>
-            <span>List Authors</span></a>
-    </li>
-
     <li class="nav-item {{ Request::segment(2) == "cars" ? "active" : ""  }}">
         <a class="nav-link" href="{{ url("/dashboard/cars") }}">
             <i class="fa fa-car"></i>
